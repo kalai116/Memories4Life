@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import 'react-native-gesture-handler';
 import React from 'react';
 import { useState } from 'react';
+import { useRef } from 'react';
 import {
   View,
   Text,
@@ -12,17 +13,31 @@ import {
   Pressable,
   StyleSheet,
   Button,
+  ScrollView
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
+import CoupleScreen from "./CoupleScreen.js";
+import Layout from './layout.js';
+import MomSonDaughter from "./MomSonDaughter.js"
+import FatherSonDaughter from './FatherSonDaughter.js';
+import Friends from './Friends.js';
+import Siblings from './Siblings.js';
+import Cousins from './Cousins.js';
+import Family from './Family.js';
+import Others from './Others.js';
+import SignUpScreen from './SignUpScreen.js';
+import SettingsScreen from './SettingsScreen.js';
 
 const ACCENT = "#1b495fff"; 
 const BG = "#2596be";
 const PANEL = "#92a8ceff";
 const TAB_BG = "#92a8ceff";
 const HomeStack = createNativeStackNavigator();
+const RootStack = createNativeStackNavigator();
 
 //declaring variables and assigning values
 //creating an array to store the image frm the asset folder to a 
@@ -42,23 +57,33 @@ const categories = [
   { label: "Mom &\nSon/Daughter",   icon: "human-female-boy", image: require('./assets/momdaugbg.jpg') },
   { label: "Father &\nSon/Daughter",icon: "human-male-boy", image: require('./assets/fatherdsbg.jpg') },
   { label: "Friends",               icon: "account-multiple-outline", image: require('./assets/Friends.jpg') },
-  { label: "Sisters",               icon: "human-female-female", image: require('./assets/siblings.jpg') },
-  { label: "Brothers",              icon: "human-male-male", image: require('./assets/spiritual.jpg') },
-  { label: "Cousin",                icon: "account-group-outline", image: require('./assets/cousins.jpg') },
-  { label: "Other",                 icon: "plus-circle-outline", image: require('./assets/others.jpg') },
+  { label: "Siblings",              icon: "human-queue", image: require('./assets/siblings.jpg') },
+  { label: "Family",                icon: "human-male-female-child", image: require('./assets/Familybg.jpg') },
+  { label: "Cousins",               icon: "account-group-outline", image: require('./assets/cousins.jpg') },
+  { label: "Others",                icon: "plus-circle-outline", image: require('./assets/others.jpg') },
 ];
+
 
 function HomeStackNavigator() {
   return (
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-      <HomeStack.Screen name="Categories" component={CategoriesScreen} />
-      <HomeStack.Screen name="CodeEntry" component={CodeField} />
+      <HomeStack.Screen name="HomeScreen" component={HomeScreen} />
+      <HomeStack.Screen name="CoupleScreen" component={CoupleScreen} />
+      <HomeStack.Screen name="MomSonDaughter" component={MomSonDaughter} />
+      <HomeStack.Screen name="FatherSonDaughter" component={FatherSonDaughter} />
+      <HomeStack.Screen name="Friends" component={Friends} />
+      <HomeStack.Screen name="Siblings" component={Siblings} />
+      <HomeStack.Screen name="Cousins" component={Cousins} />
+      <HomeStack.Screen name="Family" component={Family} />
+      <HomeStack.Screen name="Others" component={Others} />
+      
     </HomeStack.Navigator>
   );
 }
 //Creating a header component to customize the functions of that portion 
 //this is a reusable function 
 function Header(){
+  const navigation = useNavigation();
   return (
     //view is just like div in html 
     //it follows the style mentioned under header in style style
@@ -66,16 +91,22 @@ function Header(){
     //the icon is a signup icon uses the same in built icon design
     //text the app name in the middle and settings icon in the same row
     <View style={styles.header}> 
-    <Pressable style = {styles.headerIcon}>
+    <Pressable 
+    style = {styles.headerIcon}
+    onPress={() => navigation.navigate("SignUp")}>
       <Ionicons name = "person-add-outline" size = {22} color={ACCENT} />
+      
     </Pressable>
     <Text style = {styles.headerTitle}>Memories4Life</Text>
-    <Pressable style = {styles.headerIcon}>
+    <Pressable 
+    style = {styles.headerIcon}
+    onPress={() => navigation.navigate("")}>
       <Ionicons name = "settings-outline" size = {22} color={ACCENT} />
     </Pressable>
     </View>
   )
-}
+} 
+
 //below the status bar is the image saved in a variable photo
 //custom component to use the image in a panel 
 function PhotoGrid() {
@@ -110,12 +141,10 @@ function CategoryButton({ label, icon, onPress }) {
   );
 }
 
-
-
-function HomeScreen() {
+function HomeScreen({navigation}) {
   return (
-    <SafeAreaView style={styles.screen}>
-      <Header />
+     <Layout>
+      
       <PhotoGrid />
       <View style={styles.panel}>
         <FlatList
@@ -123,19 +152,39 @@ function HomeScreen() {
           keyExtractor={(item) => item.label}
           numColumns={2}
           columnWrapperStyle={{ gap: 14 }}
-          contentContainerStyle={{ padding: 16, gap: 14 }}
+          contentContainerStyle={{ padding: 10, gap: 14 }}
           renderItem={({ item }) => (
             <CategoryButton
               label={item.label}
               icon={item.icon}
-              onPress={() => {}}
+              onPress={() => {
+                if(item.label === "Couple")
+                  navigation.navigate("CoupleScreen");
+                //else alert(`${item.label} clicked`);
+                if(item.label === "Mom &\nSon/Daughter")
+                  navigation.navigate("MomSonDaughter");
+                if(item.label === "Father &\nSon/Daughter")
+                  navigation.navigate("FatherSonDaughter");
+                if(item.label === "Friends")
+                  navigation.navigate("Friends");
+                if(item.label === "Siblings")
+                  navigation.navigate("Siblings");
+                if(item.label === "Cousins")
+                  navigation.navigate("Cousins");
+                if(item.label === "Family")
+                  navigation.navigate("Family");
+                if(item.label === "Others")
+                  navigation.navigate("Others");
+
+              }}
             />
           )}
           ListFooterComponent={<View style={{ height: 8 }} />}
           showsVerticalScrollIndicator={false}
         />
       </View>
-    </SafeAreaView>
+    
+   </Layout> 
   );
 }
 
@@ -151,6 +200,16 @@ const Tab = createBottomTabNavigator();
 export default function App() {
   return (
     <NavigationContainer>
+      <RootStack.Navigator screenOptions={{ headerShown: false }} initialRouteName="BottomTabs">
+        <RootStack.Screen name="BottomTabs" component={bottomTabs} />
+        <RootStack.Screen name="SignUp" component={SignUpScreen} />
+        <RootStack.Screen name="Settings" component={SettingsScreen} />
+      </RootStack.Navigator>
+    </NavigationContainer>
+  );
+}
+function bottomTabs (){
+  return (
       <Tab.Navigator
         screenOptions={({ route }) => ({
           headerShown: false,
@@ -168,13 +227,12 @@ export default function App() {
           },
         })}
       >
-       
-        <Tab.Screen name="Home" component={HomeScreen} />
+      
+        <Tab.Screen name="Home" component={HomeStackNavigator} />
         <Tab.Screen name="Memories" children={() => <Stub title="Memories" />} />
         <Tab.Screen name="Notifications" children={() => <Stub title="Notifications" />} />
         <Tab.Screen name="Profile" children={() => <Stub title="Profile" />} />
       </Tab.Navigator>
-    </NavigationContainer>
   );
 }
 
@@ -199,13 +257,21 @@ const styles = StyleSheet.create({
     backgroundColor: "#dce2e9ff",
   },
   headerTitle: {
-    flex: 1, textAlign: "center",
-    fontSize: 20, fontWeight: "700", color: ACCENT,
+    flex: 1, 
+    
+    textAlign: "center",
+    fontSize: 20, 
+    fontWeight: "800", 
+    color: ACCENT,
   },
   gridWrap: {
-    flexDirection: "row", flexWrap: "wrap",
-    marginHorizontal: 12, borderRadius: 12,
-    overflow: "hidden", backgroundColor: "#ddd",
+    flexDirection: "row", 
+    flexWrap: "wrap",
+    marginHorizontal: 0, 
+    marginTop: 0,
+    borderRadius: 12,
+    overflow: "hidden", 
+    backgroundColor: "#ddd",
   },
   gridItem: {
     width: "100%",
@@ -214,7 +280,9 @@ const styles = StyleSheet.create({
   panel: {
     flex: 1,
     backgroundColor: PANEL,
-    margin: 12,
+    //margin: 12,
+    marginTop: 8,
+    marginHorizontal: 0,
     borderRadius: 16,
     shadowColor: "#000",
     shadowOpacity: 0.08,
